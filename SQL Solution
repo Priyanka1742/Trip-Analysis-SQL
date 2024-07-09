@@ -1,0 +1,62 @@
+1. How many Customers have taken a ride in more than 1 city? (for both completed and incomplete rides)
+
+SELECT 
+    COUNT(DISTINCT customer_id) AS customer_count
+FROM 
+    rides
+GROUP BY 
+    customer_id
+HAVING 
+    COUNT(DISTINCT city_name) > 1;
+
+
+2. What is the average revenue per trip for all completed trips?
+
+SELECT 
+    AVG(trip_fare) AS avg_revenue_per_trip
+FROM 
+    rides
+WHERE 
+    status = 'completed';
+
+
+3.Top 5 customers Id with the most number of completed trips
+
+SELECT 
+    customer_id, 
+    COUNT(*) AS completed_trips
+FROM 
+    rides
+WHERE 
+    status = 'completed'
+GROUP BY 
+    customer_id
+ORDER BY 
+    completed_trips DESC
+LIMIT 5;
+
+
+4.Give a list of customers who haven't taken a ride since the last 2 weeks
+
+SELECT 
+    DISTINCT customer_id
+FROM 
+    rides
+WHERE 
+    customer_id NOT IN (
+        SELECT 
+            customer_id
+        FROM 
+            rides
+        WHERE 
+            ride_date >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
+    );
+
+
+5.Generate a percentile distribution of trip_fare
+
+SELECT 
+    trip_fare,
+    NTILE(100) OVER (ORDER BY trip_fare) AS percentile
+FROM 
+    rides;
